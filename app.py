@@ -16,8 +16,31 @@ model = tf.saved_model.load("model/")
 # The model uses the "serving_default" signature
 infer = model.signatures["serving_default"]
 
-# Update your class labels here
-class_labels = ["Cup", "Bottle"]
+# --------------------------------------
+# Print model signatures
+# --------------------------------------
+print(model.signatures)
+
+# --------------------------------------
+# Get input tensor name
+# --------------------------------------
+input_tensor_name = list(infer.structured_input_signature[1].keys())[0]
+output_tensor_name = list(infer.structured_outputs.keys())[0]
+
+# --------------------------------------
+# Load class labels
+# --------------------------------------
+
+label_path = os.path.join(extract_dir, "labels.txt")
+
+if os.path.exists(label_path):
+    with open(label_path) as f:
+        labels = [label.strip().split() for label in f.readlines()]
+        # Convert to dictionary
+        labels = dict((label[0], label[1]) for label in labels)
+        print("\nClass labels:", labels)
+else:
+    print("\nNo labels file found. You may manually create a list of class labels.")
 
 
 # --------------------------------------
@@ -31,7 +54,10 @@ def preprocess(image: Image.Image):
     img = np.array(img).astype(np.float32)
     img = img / 255.0
     img = np.expand_dims(img, axis=0)  # add batch dimension
-    return tf.convert_to_tensor(img)
+    # Create input dictionary
+    input_dict = {input_tensor_name: tf.convert_to_tensor(img)}
+
+    return input_dict
 
 
 # --------------------------------------
@@ -41,14 +67,14 @@ def predict(image):
     x = preprocess(image)
 
     # Infer using TensorFlow SavedModel signature
-    outputs = infer(x)
+    outputs = infer(**x)
 
     # Teachable Machine SavedModel returns tensor "outputs"
-    preds = outputs["outputs"].numpy()[0]
-    idx = np.argmax(preds)
+    preds = outputs[output_tensor_name].numpy()[0]
+    idx = int(np.argmax(preds))
     conf = preds[idx]
 
-    return class_labels[idx], float(conf)
+    return labels[f'{idx}'], float(conf)
 
 
 # --------------------------------------
