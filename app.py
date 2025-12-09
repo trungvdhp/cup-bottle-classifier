@@ -32,7 +32,7 @@ output_tensor_name = list(infer.structured_outputs.keys())[0]
 # Load class labels
 # --------------------------------------
 
-label_path = os.path.join(extract_dir, "labels.txt")
+label_path = 'model/labels.txt'
 
 if os.path.exists(label_path):
     with open(label_path) as f:
