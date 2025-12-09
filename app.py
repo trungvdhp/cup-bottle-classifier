@@ -72,6 +72,10 @@ def predict(image):
 
     # Teachable Machine SavedModel returns tensor "outputs"
     preds = outputs[output_tensor_name].numpy()[0]
+    
+    for i, score in enumerate(preds):
+        print(labels[f'{i}'], f'{score*100:.2f}%')
+    
     idx = int(np.argmax(preds))
     conf = preds[idx]
 
