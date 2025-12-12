@@ -76,6 +76,7 @@ def predict(image):
     
     for i, score in enumerate(preds):
         print(labels[f'{i}'], f'{score*100:.2f}%')
+        st.success(f"Prediction: **{labels[f'{i}']}** ({score*100:.2f}%)")
     
     idx = int(np.argmax(preds))
     conf = preds[idx]
