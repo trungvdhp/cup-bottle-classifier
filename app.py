@@ -105,7 +105,7 @@ if mode == "Image Upload":
     uploaded = st.file_uploader("Choose an image", type=["jpg", "png", "jpeg"])
     if uploaded:
         image = Image.open(uploaded).convert("RGB")
-        st.image(image, caption="Uploaded Image", width=True)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
 
         label, conf = predict(image)
         st.success(f"Prediction: **{label}** ({conf*100:.2f}%)")
@@ -120,7 +120,7 @@ elif mode == "Camera Capture":
     picture = st.camera_input("Capture Image")
     if picture:
         image = Image.open(picture).convert("RGB")
-        st.image(image, caption="Captured Photo", width=True)
+        st.image(image, caption="Captured Photo", use_column_width=True)
 
         label, conf = predict(image)
         st.success(f"Prediction: **{label}** ({conf*100:.2f}%)")
