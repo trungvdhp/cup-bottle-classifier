@@ -42,6 +42,7 @@ if os.path.exists(label_path):
         print("\nClass labels:", labels)
 else:
     print("\nNo labels file found. You may manually create a list of class labels.")
+    labels = {"0":"Cup",  "1":"Bottle"}
 
 
 # --------------------------------------
@@ -56,7 +57,7 @@ def preprocess(image: Image.Image):
     img = img / 255.0
     img = np.expand_dims(img, axis=0)  # add batch dimension
     # Create input dictionary
-    input_dict = {input_tensor_name: tf.convert_to_tensor(img)}
+    input_dict = {input_tensor_name: tf.convert_to_tensor(img, dtype=tf.float32)}
 
     return input_dict
 
@@ -102,7 +103,7 @@ if mode == "Image Upload":
 
     uploaded = st.file_uploader("Choose an image", type=["jpg", "png", "jpeg"])
     if uploaded:
-        image = Image.open(uploaded)
+        image = Image.open(uploaded).convert("RGB")
         st.image(image, caption="Uploaded Image", use_column_width=True)
 
         label, conf = predict(image)
@@ -117,7 +118,7 @@ elif mode == "Camera Capture":
 
     picture = st.camera_input("Capture Image")
     if picture:
-        image = Image.open(picture)
+        image = Image.open(picture).convert("RGB")
         st.image(image, caption="Captured Photo", use_column_width=True)
 
         label, conf = predict(image)
